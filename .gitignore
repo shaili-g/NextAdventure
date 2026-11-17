@@ -1,0 +1,12 @@
+# Your personal job-search files. They stay on your computer and are never committed,
+# so pulling updates to this project can't overwrite them and a fork can't publish them.
+Master Resume/
+Profile/
+Pipeline/
+Companies/
+
+# Local Claude Code settings and system files
+.claude/settings.local.json
+.DS_Store
+__pycache__/
+*.pyc

@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 .claude/skills/*)",
+      "Edit(Profile/**)",
+      "Edit(Master Resume/**)",
+      "Edit(Pipeline/**)",
+      "Edit(Companies/**)",
+      "WebSearch",
+      "WebFetch(domain:jobs.ashbyhq.com)",
+      "WebFetch(domain:job-boards.greenhouse.io)",
+      "WebFetch(domain:boards.greenhouse.io)",
+      "WebFetch(domain:jobs.lever.co)",
+      "WebFetch(domain:app.dover.com)",
+      "WebFetch(domain:www.ycombinator.com)",
+      "WebFetch(domain:news.ycombinator.com)",
+      "Artifact",
+      "ArtifactData"
+    ]
+  }
+}

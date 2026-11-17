@@ -1,0 +1,366 @@
+<title>/*__TITLE__*/</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one narrow column with three tabs: the daily dispatch, the to-do queue, the pipeline ledger. */
+:root {
+  --paper: #F5F7F8; --surface: #FFFFFF; --ink: #17212B; --muted: #566270; --line: #DCE2E7;
+  --accent: #23676B; --accent-soft: #E1EFEF; --on-accent: #FFFFFF;
+  --good: #2C7A4B; --good-soft: #E3F2E8; --warn: #9A6412; --warn-soft: #F7EEDC; --risk: #A63D2F; --risk-soft: #F7E3DF;
+  --f-head: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-data: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #0F151B; --surface: #161E26; --ink: #E5EAEF; --muted: #97A3AF; --line: #26313C;
+  --accent: #74B9BC; --accent-soft: #1B2F31; --on-accent: #0F151B;
+  --good: #7CC79A; --good-soft: #17291F; --warn: #E0B263; --warn-soft: #2E2615; --risk: #EB8F80; --risk-soft: #331C18;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #0F151B; --surface: #161E26; --ink: #E5EAEF; --muted: #97A3AF; --line: #26313C;
+  --accent: #74B9BC; --accent-soft: #1B2F31; --on-accent: #0F151B;
+  --good: #7CC79A; --good-soft: #17291F; --warn: #E0B263; --warn-soft: #2E2615; --risk: #EB8F80; --risk-soft: #331C18;
+  color-scheme: dark; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.55 var(--f-body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+.wrap { max-width: 720px; margin: 0 auto; padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 24px; }
+h1, h2, h3 { font-family: var(--f-head); text-wrap: balance; margin: 0; }
+h1 { font-size: 1.6rem; line-height: 1.2; font-weight: 700; }
+h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); font-weight: 500; }
+h3 { font-size: 1.25rem; line-height: 1.25; font-weight: 700; }
+p { margin: 0; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--f-data); font-size: .8rem; color: var(--muted); }
+.counts { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--f-data); font-size: .85rem; font-variant-numeric: tabular-nums; color: var(--muted); }
+.counts b { color: var(--ink); font-weight: 500; }
+section { display: flex; flex-direction: column; gap: 12px; }
+.panel { display: flex; flex-direction: column; gap: 28px; }
+
+/* tabs */
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper);
+  display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 0 -4px; padding: 8px 4px 0; }
+.tabs a { text-decoration: none; color: var(--muted); font: 500 .92rem var(--f-body); padding: 8px 12px 10px;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; display: flex; gap: 6px; align-items: center; }
+.tabs a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); }
+.badge { font: 500 .72rem var(--f-data); background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 1px 7px; font-variant-numeric: tabular-nums; }
+.badge.warn { background: var(--warn-soft); color: var(--warn); }
+
+/* job cards */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.card-head { display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+.card-head > div { min-width: 0; }
+.score { font-family: var(--f-data); font-variant-numeric: tabular-nums; text-align: right; }
+.score .n { font-size: 1.8rem; line-height: 1; color: var(--accent); font-weight: 500; }
+.score .d { color: var(--muted); font-size: .85rem; }
+.meter { display: flex; gap: 3px; margin-top: 6px; justify-content: flex-end; }
+.meter i { width: 14px; height: 6px; border-radius: 2px; background: var(--line); }
+.meter i.on { background: var(--accent); }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.meta .pill { white-space: normal; }
+main, .panel, .panel > section, .card { min-width: 0; }
+.card, .row { overflow-wrap: anywhere; }
+.pill { font-size: .75rem; font-weight: 500; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+.pill.good { background: var(--good-soft); color: var(--good); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.risk { background: var(--risk-soft); color: var(--risk); }
+.pill.plain { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px 16px; font-size: .85rem; margin: 0; }
+.facts dt { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; }
+.facts dd { margin: 0; }
+ol.why { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 10px; }
+.receipt { display: block; font-family: var(--f-data); font-size: .75rem; color: var(--muted); margin-top: 2px; }
+.say { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; }
+.note { font-size: .88rem; color: var(--muted); }
+details summary { cursor: pointer; color: var(--accent); font-weight: 500; font-size: .88rem; }
+details[open] summary { margin-bottom: 12px; }
+details > div { display: flex; flex-direction: column; gap: 14px; }
+
+/* actions */
+.act { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; border-top: 1px solid var(--line); padding-top: 12px; }
+.card .act:first-child, .row .act { border-top: 0; padding-top: 0; }
+button { font: 500 .82rem var(--f-body); color: var(--accent); background: transparent; border: 1px solid var(--accent); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+button.primary { background: var(--accent); color: var(--on-accent); }
+button.quiet { border-color: var(--line); color: var(--muted); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+label.check { display: inline-flex; gap: 6px; align-items: center; font-size: .82rem; color: var(--muted); cursor: pointer; }
+input[type="text"], select { font: .85rem var(--f-body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; min-width: 0; }
+input[type="text"] { flex: 1 1 200px; }
+.state { font-size: .82rem; display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.state .pill { white-space: normal; }
+.linkish { border: 0; padding: 0; color: var(--muted); text-decoration: underline; font-size: .8rem; }
+
+/* lists */
+ul.rows { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+li.row { padding: 12px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+.row-top { display: flex; gap: 8px 12px; justify-content: space-between; align-items: baseline; flex-wrap: wrap; }
+.row-top > div { min-width: 0; }
+.row b { font-weight: 600; }
+.row .sub { color: var(--muted); font-size: .86rem; }
+.num { font-family: var(--f-data); font-variant-numeric: tabular-nums; }
+.empty { color: var(--muted); font-size: .9rem; padding: 10px 0; border-top: 1px solid var(--line); }
+.banner { font-size: .85rem; color: var(--warn); background: var(--warn-soft); border-radius: 8px; padding: 10px 12px; }
+.statusbar { display: flex; flex-wrap: wrap; gap: 6px; }
+.statusbar button { border-color: var(--line); color: var(--muted); font-variant-numeric: tabular-nums; }
+.statusbar button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+footer { font-size: .78rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+@media (prefers-reduced-motion: no-preference) { button { transition: background .15s, color .15s; } }
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="headline"></h1>
+    <div class="counts" id="counts"></div>
+  </header>
+  <nav class="tabs" aria-label="Sections">
+    <a href="#today" data-tab="today">Today</a>
+    <a href="#todos" data-tab="todos">To-dos <span class="badge" id="todo-badge"></span></a>
+    <a href="#tracker" data-tab="tracker">Tracker</a>
+  </nav>
+  <div id="conn" class="banner" hidden></div>
+  <main>
+    <div class="panel" id="p-today"></div>
+    <div class="panel" id="p-todos" hidden></div>
+    <div class="panel" id="p-tracker" hidden></div>
+  </main>
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const A = (DATA && DATA.alert) || {};
+const STATUSES = ["Evaluated", "Applied", "Responded", "Interview", "Offer", "Rejected", "Discarded"];
+let db = null, requests = {}, dbState = "connecting", showClosed = false, statusFilter = null;
+
+const h = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const u = (s) => /^https?:\/\//i.test(String(s ?? "").trim()) ? h(String(s).trim()) : "#"; // only http(s) links; blocks javascript: and data: URLs from feeds
+const fmtDate = (iso) => { if (!iso) return ""; const d = new Date(iso.slice(0, 10) + "T12:00:00"); return isNaN(d) ? iso : d.toLocaleDateString("en-US", {month: "short", day: "numeric"}); };
+const reqId = (type, key) => `${type}--${key}`.slice(0, 140);
+const reqFor = (type, key) => requests[reqId(type, key)];
+const tone = (t) => ({good: "good", warn: "warn", risk: "risk"}[t] || "");
+
+/* ---- requests (saved clicks) ---- */
+async function queue(type, item, extra = {}) {
+  if (!db) return;
+  const id = reqId(type, item.key);
+  const doc = {type, key: item.key, company: item.company, role: item.title || item.role || (item.roles || [])[0] || "",
+    url: item.url || "", status: "queued", created: new Date().toISOString(), result: "", ...extra};
+  requests[id] = doc; render();
+  try { await db.collection("requests").doc(id).set(doc); }
+  catch (e) { delete requests[id]; render(); showConn("Couldn't save that click (" + (e.code || "error") + "). Try again."); }
+}
+async function undo(id) {
+  if (!db) return;
+  const keep = requests[id]; delete requests[id]; render();
+  try { await db.collection("requests").doc(id).delete(); }
+  catch (e) { requests[id] = keep; render(); showConn("Couldn't undo (" + (e.code || "error") + ")."); }
+}
+function showConn(msg) { const el = document.getElementById("conn"); el.textContent = msg; el.hidden = !msg; }
+
+function stateChip(r, id) {
+  if (r.status === "queued") return `<span class="state"><span class="pill warn">Queued</span><button class="linkish" data-undo="${h(id)}">Undo</button></span>`;
+  if (r.status === "failed") return `<span class="state"><span class="pill risk">Couldn't finish: ${h(r.result)}</span></span>`;
+  return `<span class="state"><span class="pill good">Done${r.result ? ": " + h(r.result) : ""}</span></span>`;
+}
+const dis = () => (db ? "" : " disabled");
+
+/* job actions: Apply (+ cover letter) and Not for me */
+function jobActions(j) {
+  const st = DATA.tracker_status[j.key];
+  const a = reqFor("apply", j.key), n = reqFor("not_for_me", j.key);
+  if (a) return `<div class="act">${stateChip(a, reqId("apply", j.key))}${a.cover ? '<span class="pill plain">+ cover letter</span>' : ""}</div>`;
+  if (n) return `<div class="act">${stateChip(n, reqId("not_for_me", j.key))}${n.reason ? `<span class="note">${h(n.reason)}</span>` : ""}</div>`;
+  if (st && ["Applied", "Responded", "Interview", "Offer"].includes(st)) return `<div class="act"><span class="pill good">In your tracker: ${h(st)}</span></div>`;
+  return `<div class="act" data-job="${h(j.key)}">
+    <button class="primary" data-apply="${h(j.key)}"${dis()}>Apply</button>
+    <label class="check"><input type="checkbox" id="cl-${h(j.key)}"${dis()}> + cover letter</label>
+    <button class="quiet" data-nfm="${h(j.key)}"${dis()}>Not for me</button>
+    <span class="note">Apply queues a fit report and a tailored resume for the next check. Say “check my dashboard” to start now.</span>
+  </div>`;
+}
+
+function meter(score) { const n = Math.round(Number(score) || 0); return `<div class="meter" aria-hidden="true">${[1,2,3,4,5].map((i) => `<i class="${i <= n ? "on" : ""}"></i>`).join("")}</div>`; }
+
+function bigCard(j) {
+  return `<article class="card">
+    <div class="card-head"><div><div class="eyebrow">${h(j.company)} · ${h(j.location)}</div><h3>${h(j.title)}</h3></div>
+      ${j.score != null ? `<div class="score" aria-label="Score ${h(j.score)} out of 5"><span class="n">${h(j.score)}</span><span class="d"> / 5</span>${meter(j.score)}</div>` : ""}</div>
+    <div class="meta">${j.verdict ? `<span class="pill ${tone(j.tone)}">${h(j.verdict)}</span>` : ""}${j.ghost ? `<span class="pill warn">${h(j.ghost)}</span>` : ""}${j.role_type ? `<span class="pill">${h(j.role_type)}</span>` : ""}${j.source ? `<span class="pill plain">${h(j.source)}</span>` : ""}</div>
+    <dl class="facts"><div><dt>Posted</dt><dd>${h(j.posted || "Not listed")}</dd></div><div><dt>Salary</dt><dd>${h(j.salary || "Not listed")}</dd></div><div><dt>Apply at</dt><dd><a href="${u(j.url)}" target="_blank" rel="noopener">Employer's posting</a></dd></div></dl>
+    ${j.why_score ? `<p><b>Why ${h(j.score)}:</b> ${h(j.why_score)}</p>` : ""}
+    <details><summary>Why you, what to say, the top gap</summary><div>
+      ${j.note ? `<p class="note">${h(j.note)}</p>` : ""}
+      ${(j.why || []).length ? `<ol class="why">${j.why.map((w) => `<li>${h(w.text)}<span class="receipt">${h(w.receipt)}</span></li>`).join("")}</ol>` : ""}
+      ${j.say ? `<div class="say"><p>“${h(j.say)}”</p><div class="act" style="border:0;padding:6px 0 0"><button class="quiet" data-copy="${h(j.key)}">Copy</button><span class="note" aria-live="polite" id="cp-${h(j.key)}"></span></div></div>` : ""}
+      ${j.gap ? `<p><b>Top gap:</b> ${h(j.gap)}</p>` : ""}
+    </div></details>
+    ${jobActions(j)}
+  </article>`;
+}
+
+function smallRow(j, sub) {
+  return `<li class="row"><div class="row-top"><div><b>${h(j.company)}</b> · ${h(j.title)}<div class="sub">${h(sub)}</div></div>
+    ${j.score != null ? `<span class="num">${h(j.score)}</span>` : ""}</div>
+    ${j.url ? `<a href="${u(j.url)}" target="_blank" rel="noopener" class="note">Open posting</a>` : ""}
+    ${jobActions(j)}</li>`;
+}
+const listOr = (items, fn, empty) => items && items.length ? `<ul class="rows">${items.map(fn).join("")}</ul>` : `<p class="empty">${h(empty)}</p>`;
+
+/* ---- Today ---- */
+function renderToday() {
+  const nc = A.new_companies || {}, so = A.screened_out || {};
+  const must = nc.must_have || [], recent = nc.recent || [];
+  return `
+  <section><h2>Top match</h2>${A.top ? bigCard(A.top) : '<p class="empty">No top match today.</p>'}</section>
+  <section><h2>Other scored matches</h2>${(A.scored || []).length ? A.scored.map(bigCard).join("") : '<p class="empty">None today.</p>'}</section>
+  <section><h2>Worth a look, not scored</h2>${listOr(A.worth_look, (j) => smallRow(j, [j.location, j.reason].filter(Boolean).join(" · ")), "None today.")}</section>
+  ${must.length ? `<section><h2>Open roles at your must-have companies</h2><p class="note">First scan of companies you asked for. Roles from the last 14 days that passed your filters. Pick the ones worth a fit report.</p>${listOr(must, (j) => smallRow(j, [j.location, j.posted ? "posted " + fmtDate(j.posted) : "", j.stale ? "posted over 90 days ago, may be stale" : ""].filter(Boolean).join(" · ")), "")}</section>` : ""}
+  ${recent.length ? `<section><h2>Recent roles at newly added companies</h2><p class="note">Only roles from the last 7 days.</p>${listOr(recent, (j) => smallRow(j, [j.location, j.posted ? "posted " + fmtDate(j.posted) : ""].filter(Boolean).join(" · ")), "")}</section>` : ""}
+  ${(A.proposed_targets || []).length ? `<section><h2>Suggested new companies to scan</h2><ul class="rows">${A.proposed_targets.map((t) => `<li class="row"><div><b>${h(t.company)}</b><div class="sub">${h(t.reason)}</div></div></li>`).join("")}</ul></section>` : ""}
+  <section><h2>Screened out</h2><p class="note">${h(so.summary || "")}</p>
+    ${(so.near_misses || []).length ? `<ul class="rows">${so.near_misses.map((m) => `<li class="row"><div><b>${h(m.company)}</b> · ${h(m.title)}<div class="sub">${h(m.location || "")}</div></div><a href="${u(m.url)}" target="_blank" rel="noopener" class="note">Open posting</a></li>`).join("")}</ul><p class="note">Spot one that shouldn't have been dropped? Tell Claude and it will widen the filter.</p>` : ""}</section>
+  ${(A.couldnt_reach || []).length ? `<section><h2>Coverage</h2><ul class="rows">${A.couldnt_reach.map((c) => `<li class="row"><span class="sub">${h(c)}</span></li>`).join("")}</ul></section>` : ""}`;
+}
+
+/* ---- To-dos ---- */
+function todoAct(type, item, label, cls = "") {
+  const r = reqFor(type, item.key);
+  if (r) return stateChip(r, reqId(type, item.key));
+  return `<button class="${cls}" data-q="${type}" data-key="${h(item.key)}"${dis()}>${h(label)}</button>`;
+}
+let todoIndex = {};
+function renderTodos() {
+  const T = DATA.todos || {}; todoIndex = {};
+  const reg = (x) => { todoIndex[x.key] = x; return x; };
+  const queued = Object.entries(requests).filter(([, r]) => r.status === "queued");
+  const doneRecent = Object.entries(requests).filter(([, r]) => r.status !== "queued").sort((a, b) => (b[1].done || "").localeCompare(a[1].done || "")).slice(0, 8);
+  const kindLabel = {first: "First follow-up", scheduled: "Scheduled check-in", nudge: "Nudge", "thank-you": "Thank-you note", close: "Close out"};
+  const typeLabel = {apply: "Fit report + resume", not_for_me: "Not for me", mark_applied: "Mark applied", draft_followup: "Draft follow-up", followup_sent: "Follow-up sent", prep: "Interview prep", status: "Status change"};
+  return `
+  <section><h2>Ready to apply</h2><p class="note">Materials are done but the job isn't marked applied.</p>
+    ${listOr((T.ready || []).map(reg), (r) => `<li class="row"><div class="row-top"><div><b>${h(r.company)}</b> · ${h(r.role)}<div class="sub">Score ${h(r.score)} · updated ${fmtDate(r.updated)}</div></div></div>
+      <div class="act">${todoAct("mark_applied", r, "Mark applied", "primary")}${r.url ? `<a class="note" href="${u(r.url)}" target="_blank" rel="noopener">Open posting</a>` : ""}</div></li>`, "Nothing waiting.")}</section>
+  <section><h2>Follow-ups due</h2>
+    ${listOr((T.followups || []).filter((f) => !f.error).map(reg), (f) => `<li class="row"><div class="row-top"><div><b>${h(f.company)}</b> · ${h(f.roles.join(", "))}<div class="sub">${h(kindLabel[f.kind] || f.kind)} · ${h(f.why)}${f.sent_so_far ? ` · ${f.sent_so_far} sent so far` : ""}</div></div></div>
+      ${f.live ? '<p class="note">Another role here is in process. Raise it there instead of sending a cold note.</p>' : ""}
+      <div class="act">${todoAct("draft_followup", f, "Draft it", "primary")}${todoAct("followup_sent", f, "I sent it")}</div></li>`, "No follow-ups due.")}
+    ${(T.followups || []).some((f) => f.error) ? `<p class="banner">${h(T.followups.find((f) => f.error).error)}</p>` : ""}</section>
+  <section><h2>Stale applications</h2><p class="note">Applied 21+ days ago with no reply.</p>
+    ${listOr((T.stale || []).map(reg), (r) => `<li class="row"><div class="row-top"><div><b>${h(r.company)}</b> · ${h(r.role)}<div class="sub">Applied ${fmtDate(r.applied_on)} · <span class="num">${h(r.days)}</span> days</div></div></div>
+      <div class="act">${todoAct("draft_followup", r, "Follow up", "primary")}${reqFor("status", r.key) ? stateChip(reqFor("status", r.key), reqId("status", r.key)) : `<button class="quiet" data-drop="${h(r.key)}"${dis()}>Drop it</button>`}</div></li>`, "Nothing stale.")}</section>
+  <section><h2>Interviews</h2>
+    ${listOr((T.interviews || []).map(reg), (r) => `<li class="row"><div class="row-top"><div><b>${h(r.company)}</b> · ${h(r.role)}<div class="sub">${h(r.step)} · prep ${r.prep_ready ? "ready" : "not started"}</div></div></div>
+      <div class="act">${todoAct("prep", r, r.prep_ready ? "Refresh prep" : "Prep me", r.prep_ready ? "" : "primary")}</div></li>`, "No interviews in progress.")}</section>
+  <section><h2>Queued</h2><p class="note">Clicks are saved here. Claude acts on them at the next check (hourly if you turned it on, otherwise the morning run), or right away when you say “check my dashboard”.</p>
+    ${queued.length ? `<ul class="rows">${queued.map(([id, r]) => `<li class="row"><div class="row-top"><div><b>${h(r.company)}</b> · ${h(r.role)}<div class="sub">${h(typeLabel[r.type] || r.type)}${r.value ? ": " + h(r.value) : ""}${r.cover ? " + cover letter" : ""}${r.reason ? " · " + h(r.reason) : ""}</div></div><button class="linkish" data-undo="${h(id)}">Undo</button></div></li>`).join("")}</ul>` : '<p class="empty">Nothing queued.</p>'}</section>
+  ${doneRecent.length ? `<section><h2>Recently done</h2><ul class="rows">${doneRecent.map(([, r]) => `<li class="row"><div><b>${h(r.company)}</b> · ${h(r.role)}<div class="sub">${h(typeLabel[r.type] || r.type)} · ${r.status === "failed" ? "couldn't finish: " : ""}${h(r.result)}</div></div></li>`).join("")}</ul></section>` : ""}`;
+}
+function todoCount() {
+  const T = DATA.todos || {};
+  return (T.ready || []).length + (T.followups || []).filter((f) => !f.error).length + (T.stale || []).length + (T.interviews || []).filter((r) => !r.prep_ready).length;
+}
+
+/* ---- Tracker ---- */
+function renderTracker() {
+  const rows = DATA.tracker || [];
+  const counts = {}; rows.forEach((r) => { counts[r.status] = (counts[r.status] || 0) + 1; });
+  const week = new Date(); week.setDate(week.getDate() - 7);
+  const appliedWeek = rows.filter((r) => r.applied_on && new Date(r.applied_on + "T12:00:00") >= week).length;
+  const closed = new Set(["Skip", "Discarded", "Rejected"]);
+  const order = {Offer: 0, Interview: 1, Responded: 2, Applied: 3, Evaluated: 4, Rejected: 5, Discarded: 6, Skip: 7};
+  let shown = rows.filter((r) => statusFilter ? r.status === statusFilter : (showClosed || !closed.has(r.status)));
+  shown = shown.slice().sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9) || (b.days ?? -1) - (a.days ?? -1));
+  rows.forEach((r) => { todoIndex[r.key] = todoIndex[r.key] || r; });
+  return `
+  <section><h2>Pipeline</h2>
+    <div class="counts"><span><b>${counts.Applied || 0}</b> applied</span><span><b>${counts.Responded || 0}</b> replied</span><span><b>${counts.Interview || 0}</b> interviewing</span><span><b>${counts.Offer || 0}</b> offers</span><span><b>${appliedWeek}</b> applied this week</span></div>
+    <div class="statusbar" role="group" aria-label="Filter by status">
+      <button aria-pressed="${!statusFilter}" data-filter="">Active</button>
+      ${["Evaluated", "Applied", "Responded", "Interview", "Offer", "Rejected", "Discarded", "Skip"].filter((s) => counts[s]).map((s) => `<button aria-pressed="${statusFilter === s}" data-filter="${s}">${s} ${counts[s]}</button>`).join("")}
+    </div>
+    ${!statusFilter ? `<label class="check"><input type="checkbox" id="show-closed"${showClosed ? " checked" : ""}> Show skipped, dropped and rejected</label>` : ""}
+  </section>
+  <section>${listOr(shown, (r) => {
+    const sr = reqFor("status", r.key);
+    return `<li class="row"><div class="row-top"><div><b>${h(r.company)}</b> · ${r.url ? `<a href="${u(r.url)}" target="_blank" rel="noopener">${h(r.role)}</a>` : h(r.role)}
+      <div class="sub">${h(r.step)}${r.applied_on ? ` · applied ${fmtDate(r.applied_on)} (<span class="num">${h(r.days)}</span>d)` : ""}${r.score ? ` · score ${h(r.score)}` : ""}</div></div>
+      <span class="pill ${r.status === "Offer" || r.status === "Interview" ? "good" : r.status === "Responded" ? "" : closed.has(r.status) ? "plain" : "warn"}">${h(r.status)}</span></div>
+      <div class="act">${sr ? stateChip(sr, reqId("status", r.key)) + `<span class="note">to ${h(sr.value)}</span>` :
+        `<label class="check" for="st-${h(r.key)}">Change status</label><select id="st-${h(r.key)}" data-status="${h(r.key)}"${dis()}><option value="">${h(r.status)}</option>${STATUSES.filter((s) => s !== r.status).map((s) => `<option>${s}</option>`).join("")}</select>`}</div></li>`;
+  }, "No roles match.")}</section>`;
+}
+
+/* ---- render + events ---- */
+function tabFromHash() { const t = (location.hash || "").slice(1); return ["today", "todos", "tracker"].includes(t) ? t : "today"; }
+function render() {
+  const tab = tabFromHash();
+  document.querySelectorAll(".tabs a").forEach((a) => a.setAttribute("aria-current", a.dataset.tab === tab ? "page" : "false"));
+  for (const t of ["today", "todos", "tracker"]) document.getElementById("p-" + t).hidden = t !== tab;
+  document.getElementById("p-today").innerHTML = renderToday();
+  document.getElementById("p-todos").innerHTML = renderTodos();
+  document.getElementById("p-tracker").innerHTML = renderTracker();
+  const n = todoCount(), b = document.getElementById("todo-badge"); b.textContent = n; b.hidden = !n; b.className = "badge" + (n ? " warn" : "");
+}
+function jobByKey(k) {
+  const nc = A.new_companies || {};
+  return [A.top, ...(A.scored || []), ...(A.worth_look || []), ...(nc.must_have || []), ...(nc.recent || [])].find((j) => j && j.key === k);
+}
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("button, a[data-tab]"); if (!t) return;
+  if (t.dataset.copy) {
+    const j = jobByKey(t.dataset.copy), hint = document.getElementById("cp-" + t.dataset.copy), p = t.closest(".say").querySelector("p");
+    const sel = () => { try { const r = document.createRange(); r.selectNodeContents(p); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } catch (_) {} };
+    try { navigator.clipboard.writeText(j.say).then(() => { hint.textContent = "Copied"; }, () => { sel(); hint.textContent = "Selected. Press Cmd+C to copy."; }); }
+    catch (_) { sel(); hint.textContent = "Selected. Press Cmd+C to copy."; }
+  }
+  else if (t.dataset.apply) { const j = jobByKey(t.dataset.apply); const cl = document.getElementById("cl-" + t.dataset.apply); queue("apply", j, {cover: !!(cl && cl.checked)}); }
+  else if (t.dataset.nfm) {
+    const box = t.closest(".act");
+    box.innerHTML = `<input type="text" id="why-${h(t.dataset.nfm)}" placeholder="Why not? Optional, e.g. too junior" aria-label="Reason"><button class="primary" data-nfmok="${h(t.dataset.nfm)}">Drop it</button><button class="linkish" data-cancel="1">Cancel</button>`;
+    box.querySelector("input").focus();
+  }
+  else if (t.dataset.nfmok) { const j = jobByKey(t.dataset.nfmok); const r = document.getElementById("why-" + t.dataset.nfmok); queue("not_for_me", j, {reason: r ? r.value.trim().slice(0, 200) : ""}); }
+  else if (t.dataset.cancel) render();
+  else if (t.dataset.undo) undo(t.dataset.undo);
+  else if (t.dataset.q) queue(t.dataset.q, todoIndex[t.dataset.key]);
+  else if (t.dataset.drop) queue("status", todoIndex[t.dataset.drop], {value: "Discarded"});
+  else if (t.dataset.filter !== undefined) { statusFilter = t.dataset.filter || null; render(); }
+});
+document.addEventListener("change", (e) => {
+  const t = e.target;
+  if (t.id === "show-closed") { showClosed = t.checked; render(); }
+  else if (t.dataset.status && t.value) queue("status", todoIndex[t.dataset.status], {value: t.value});
+});
+window.addEventListener("hashchange", () => { render(); window.scrollTo(0, 0); });
+
+/* header */
+if (!DATA) { document.getElementById("headline").textContent = "No dashboard data yet."; }
+else {
+  const d = A.date ? new Date(A.date + "T12:00:00") : null;
+  document.getElementById("eyebrow").textContent = (d ? d.toLocaleDateString("en-US", {weekday: "short", month: "short", day: "numeric", year: "numeric"}) : "") + " · weekday job alert";
+  document.getElementById("headline").textContent = A.headline || "Today's job alert";
+  const c = A.counts || {};
+  document.getElementById("counts").innerHTML = `<span><b>${(c.checked ?? 0).toLocaleString()}</b> postings checked</span><span><b>${c.new ?? 0}</b> new to you</span><span><b>${c.scored ?? 0}</b> scored</span>`;
+  document.getElementById("foot").textContent = "Reasons come only from your master resume. Scores measure fit, not interview odds. Tracker shows status and dates only; notes stay on your computer. Updated " + new Date(DATA.generated).toLocaleString("en-US", {month: "short", day: "numeric", hour: "numeric", minute: "2-digit"}) + ".";
+  render();
+}
+
+/* connect the saved-clicks store; the page works read-only without it */
+(async () => {
+  const timer = setTimeout(() => { if (dbState === "connecting") { dbState = "off"; showConn("Buttons are off: open this page in claude.ai while signed in to queue actions."); } }, 10000);
+  try {
+    db = window.claude && await window.claude.use("db");
+  } catch (e) { db = null; }
+  if (!db) { clearTimeout(timer); dbState = "off"; showConn("Buttons are off: open this page in claude.ai while signed in to queue actions."); render(); return; }
+  db.collection("requests").onSnapshot((snap) => {
+    clearTimeout(timer); dbState = "on"; showConn("");
+    const next = {}; snap.docs.forEach((d) => { next[d.id] = d.data(); }); requests = next; render();
+  }, (e) => { clearTimeout(timer); showConn("Couldn't load saved clicks (" + (e.code || "error") + "). Buttons may not save."); });
+  render();
+})();
+</script>

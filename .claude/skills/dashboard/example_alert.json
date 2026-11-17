@@ -1,0 +1,70 @@
+{
+ "date": "2026-01-15",
+ "headline": "1 strong match today: Senior Product Manager at Example Robotics (4.2)",
+ "counts": {"checked": 18240, "new": 6, "scored": 2},
+ "top": {
+  "company": "Example Robotics",
+  "title": "Senior Product Manager, Fleet Software",
+  "location": "Chicago, IL (hybrid)",
+  "salary": "$170K - $200K",
+  "posted": "2026-01-14",
+  "score": 4.2,
+  "verdict": "Good match · apply this week",
+  "tone": "good",
+  "ghost": "Ghost risk: low (posted yesterday, salary listed)",
+  "role_type": "Platform PM",
+  "source": "Company job feed (Greenhouse)",
+  "url": "https://example.com/jobs/123",
+  "note": "One or two sentences on what the company does and why this role exists, from the posting and company sources.",
+  "why_score": "One or two sentences on what drove the score up or down.",
+  "why": [
+   {"text": "A reason the user fits, with the result that proves it, taken from the master resume.", "receipt": "Employer · Title · Years"},
+   {"text": "A second reason.", "receipt": "Employer · Years"},
+   {"text": "A third reason.", "receipt": "Employer · Years"}
+  ],
+  "say": "Two or three sentences the user could say or write to this hiring manager, in their voice, using only facts from the master resume.",
+  "gap": "The biggest requirement the master can't support, and an honest way to bridge it."
+ },
+ "scored": [
+  {
+   "company": "Sample Health",
+   "title": "Product Manager, Patient Experience",
+   "location": "Remote (US)",
+   "salary": "Not listed",
+   "posted": "2026-01-13",
+   "score": 3.6,
+   "verdict": "Decent · worth applying",
+   "tone": "warn",
+   "ghost": "Ghost risk: some (no salary)",
+   "role_type": "Growth PM",
+   "source": "Company job feed (Ashby)",
+   "url": "https://example.com/jobs/456",
+   "note": "",
+   "why_score": "",
+   "why": [],
+   "say": "",
+   "gap": ""
+  }
+ ],
+ "worth_look": [
+  {"company": "Placeholder Labs", "title": "Product Lead", "location": "New York, NY", "url": "https://example.com/jobs/789", "reason": "Title fits; the posting was too thin to score."}
+ ],
+ "new_companies": {
+  "must_have": [
+   {"company": "Must-Have Co", "title": "Group Product Manager", "location": "Remote (US)", "posted": "2026-01-08", "url": "https://example.com/jobs/101", "stale": false}
+  ],
+  "recent": [
+   {"company": "Newly Added Inc", "title": "Senior Product Manager", "location": "Austin, TX", "posted": "2026-01-12", "url": "https://example.com/jobs/202", "stale": false}
+  ]
+ },
+ "proposed_targets": [
+  {"company": "Discovered Startup", "reason": "Found by web search with a live role that fits; not on your list yet."}
+ ],
+ "screened_out": {
+  "summary": "41 skipped on title, 3 on location, 0 too old, 1 already tracked.",
+  "near_misses": [
+   {"company": "Near Miss Corp", "title": "Product Owner", "location": "Remote (US)", "url": "https://example.com/jobs/303"}
+  ]
+ },
+ "couldnt_reach": ["Feeds: none failed."]
+}

@@ -1,0 +1,76 @@
+{
+  "name": "JANE DOE",
+  "headline": "SENIOR PRODUCT MANAGER | PAYMENTS",
+  "contact": [
+    {
+      "text": "Boston, MA"
+    },
+    {
+      "text": "jane@example.com"
+    },
+    {
+      "text": "555-0100"
+    },
+    {
+      "text": "LinkedIn",
+      "url": "https://www.linkedin.com/in/janedoe-example/"
+    }
+  ],
+  "sections": [
+    {
+      "title": "Summary",
+      "type": "text",
+      "text": "EXAMPLE ONLY: replace with a 3-4 sentence summary that opens with experience, names the 2-3 most relevant wins, and uses the posting's keywords."
+    },
+    {
+      "title": "Experience",
+      "type": "experience",
+      "entries": [
+        {
+          "line": "Acme Payments | 2019–2025",
+          "desc": "EXAMPLE ONLY: italic company description.",
+          "roles": [
+            {
+              "title": "Senior Product Manager, 2022–2025",
+              "scope": "EXAMPLE ONLY: one line of scope (team, products, reporting line).",
+              "bullets": [
+                "EXAMPLE ONLY: result first, with the master's number, then how."
+              ]
+            },
+            {
+              "title": "Product Manager, 2019–2022",
+              "note": "EXAMPLE ONLY: promotion note",
+              "bullets": [
+                "EXAMPLE ONLY: bullet."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Earlier Experience",
+      "type": "lines",
+      "lines": [
+        "**Analyst, Beta Co, 2015–2019**: EXAMPLE ONLY."
+      ]
+    },
+    {
+      "title": "Skills",
+      "type": "skills",
+      "lines": [
+        [
+          "Product",
+          "EXAMPLE ONLY: discovery, roadmaps, pricing"
+        ]
+      ]
+    },
+    {
+      "title": "Education",
+      "type": "lines",
+      "lines": [
+        "**BA**, Economics | State University"
+      ]
+    }
+  ]
+}
