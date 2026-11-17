@@ -6,8 +6,8 @@ It works for any role, not only product jobs. Setup asks what you do and what yo
 
 You don't need to be technical. Claude does the technical parts and asks your permission before each step.
 
-![The Today tab of the dashboard: the day's best match with its fit score, ghost-job check, salary, the reason for the score and an Apply button](docs/screenshots/today.png)
 *The Today tab of your dashboard (sample data).*
+![The Today tab of the dashboard: the day's best match with its fit score, ghost-job check, salary, the reason for the score and an Apply button](docs/screenshots/today.png)
 
 ## Get started
 
@@ -62,8 +62,8 @@ Each morning's results land on one private page in your claude.ai account, so yo
 
 The buttons do the work. Click **Apply** and Claude writes the fit report and a tailored resume (and a cover letter if you tick the box). If you turn on the hourly check, that starts within the hour. Other buttons drop a job, record that you applied, draft a follow-up or ask for interview prep.
 
-![The Tracker tab: pipeline counts, status filters, and each evaluated role with its score and a status menu](docs/screenshots/tracker.png)
 *The Tracker tab (sample data).*
+![The Tracker tab: pipeline counts, status filters, and each evaluated role with its score and a status menu](docs/screenshots/tracker.png)
 
 ## What you can say
 
